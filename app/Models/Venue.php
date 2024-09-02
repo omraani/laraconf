@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Region;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -46,21 +47,27 @@ class Venue extends Model
     {
         return
             [
-                TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('city')
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('country')
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('postal_code')
-                    ->required()
-                    ->maxLength(255),
-                Select::make('region')
-                    ->enum(Region::class)
-                    ->options(Region::class),
+                Section::make('Venue details')
+                    ->columns(2)
+                    ->icon('heroicon-o-information-circle')
+                    ->description('Provide some basic information about the talk.')
+                    ->schema([
+                        TextInput::make('name')
+                            ->required()
+                            ->maxLength(255),
+                        TextInput::make('city')
+                            ->required()
+                            ->maxLength(255),
+                        TextInput::make('country')
+                            ->required()
+                            ->maxLength(255),
+                        TextInput::make('postal_code')
+                            ->required()
+                            ->maxLength(255),
+                        Select::make('region')
+                            ->enum(Region::class)
+                            ->options(Region::class),
+                    ])
             ];
     }
 }

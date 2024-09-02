@@ -6,6 +6,7 @@ use App\Filament\Resources\TalkResource\Pages;
 use App\Filament\Resources\TalkResource\RelationManagers;
 use App\Models\Talk;
 use Filament\Forms;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -23,15 +24,20 @@ class TalkResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('title')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Textarea::make('abstract')
-                    ->required()
-                    ->columnSpanFull(),
-                Forms\Components\Select::make('speaker_id')
-                    ->relationship('speaker', 'name')
-                    ->required(),
+                Section::make('Talk details')
+                    ->icon('heroicon-o-information-circle')
+                    ->description('Provide some basic information about the talk.')
+                    ->schema([
+                        Forms\Components\TextInput::make('title')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Textarea::make('abstract')
+                            ->required()
+                            ->columnSpanFull(),
+                        Forms\Components\Select::make('speaker_id')
+                            ->relationship('speaker', 'name')
+                            ->required(),
+                    ])
             ]);
     }
 
