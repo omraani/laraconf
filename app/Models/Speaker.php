@@ -72,7 +72,7 @@ class Speaker extends Model
         return
             [
                 Section::make('Basic Information')
-                    ->columns(2)
+                    ->columns(3)
                     ->columnSpanFull()
                     ->schema([
                         TextInput::make('name')
@@ -81,6 +81,8 @@ class Speaker extends Model
                         TextInput::make('email')
                             ->email()
                             ->maxLength(255),
+                        FileUpload::make('avatar')
+                            ->avatar(),
                         Textarea::make('bio')
                             ->columnSpanFull(),
                         Fieldset::make('')
