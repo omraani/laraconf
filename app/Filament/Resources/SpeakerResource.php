@@ -2,9 +2,16 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\TalkStatus;
 use App\Filament\Resources\SpeakerResource\Pages;
+use App\Filament\Resources\SpeakerResource\RelationManagers;
 use App\Models\Speaker;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Group;
+use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -46,7 +53,9 @@ class SpeakerResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->color('primary'),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -55,10 +64,58 @@ class SpeakerResource extends Resource
             ]);
     }
 
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Section::make('Personal Information')
+                    ->columns(3)
+                    ->schema([
+                        ImageEntry::make('avatar')
+                            ->circular(),
+                        Group::make()
+                            ->columnSpan(2)
+                            ->columns(2)
+                            ->schema([
+                                TextEntry::make('name'),
+                                TextEntry::make('email'),
+                                TextEntry::make('twitter_handle')
+                                    ->label('Twitter')
+                                    ->getStateUsing(function ($record) {
+                                        return '@' . $record->twitter_handle;
+                                    })
+                                    ->url(function ($record) {
+                                        return 'https:://twitter.com/' . $record->twitter_handle;
+                                    }),
+                                TextEntry::make('has_spoken')
+                                    ->getStateUsing(function ($record) {
+                                        return $record->talks()->where('status', TalkStatus::APPROVED)->count()
+                                            > 0 ? 'Previous Speaker' : 'Has Not Spoken';
+                                    })
+                                    ->badge()
+                                    ->color(function ($state) {
+                                        if ($state === 'Previous Speaker') {
+                                            return 'success';
+                                        }
+                                        return 'primary';
+                                    }),
+                            ]),
+
+                    ]),
+                Section::make('Other Information')
+                    ->schema([
+                        TextEntry::make('bio'),
+                        TextEntry::make('qualification')
+                    ])
+
+
+            ]);
+    }
+
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\TalksRelationManager::class,
         ];
     }
 
@@ -68,6 +125,7 @@ class SpeakerResource extends Resource
             'index' => Pages\ListSpeakers::route('/'),
             'create' => Pages\CreateSpeaker::route('/create'),
             'edit' => Pages\EditSpeaker::route('/{record}/edit'),
+            'view' => Pages\ViewSpeaker::route('/{record}'),
         ];
     }
 }
